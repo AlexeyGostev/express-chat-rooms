@@ -1,6 +1,6 @@
-var path = require('path');
-var util = require('util');
-var http = require('http');
+//const path = require('path');
+const util = require('util');
+const http = require('http');
 
 function HttpError(status, message) {
     Error.apply(this, arguments);
@@ -11,7 +11,16 @@ function HttpError(status, message) {
 }
 
 util.inherits(HttpError, Error);
-
 HttpError.prototype.name = 'HttpError';
 
+function AuthError(message) {
+    Error.apply(this, arguments);
+    Error.captureStackTrace(this, HttpError);
+    this.message = message || http.STATUS_CODES[status] || "Auth Error";
+}
+
+util.inherits(AuthError, Error);
+AuthError.prototype.name = 'AuthError';
+
+exports.AuthError = AuthError;
 exports.HttpError = HttpError;

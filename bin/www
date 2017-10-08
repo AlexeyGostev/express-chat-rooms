@@ -7,12 +7,13 @@
 var app = require('../app');
 var http = require('http');
 
+var config = require('../config');
 var log = require('../libs/log')(module);
 /**
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(process.env.PORT || '3000');
+var port = normalizePort(config.get('port'));
 app.set('port', port);
 
 /**
@@ -21,6 +22,8 @@ app.set('port', port);
 
 var server = http.createServer(app);
 
+io = require('../socket')(server);
+app.set('io', io);
 /**
  * Listen on provided port, on all network interfaces.
  */

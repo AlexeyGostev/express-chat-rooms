@@ -1,0 +1,26 @@
+<body>
+<script src="/socket.io/socket.io.js"></script>
+<p>Тут чат</p>
+<div onclick="sendMessage('lox2')">Button</div>
+
+
+
+<script>
+    var socket = io.connect('');
+
+    socket.emit('addRoom', 'room2');
+    socket.on('connect', function() {
+        socket.on('message', function(message) {
+            var p = document.createElement('p');
+            p.innerHTML = message;
+            var body = document.body;
+            body.appendChild(p);
+            console.log(message);
+        });
+    });
+
+    function sendMessage(message) {
+        socket.emit('message', message);
+    }
+</script>
+</body>

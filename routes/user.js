@@ -23,7 +23,22 @@ router.get('/:id', function(req, res, next) {
         });
 });
 
-router.post('/', (req, res) => {
+router.post('/', (req, res, next) => {
+    let viewerId = req.body.viewerId + '';
+    let authKey = req.body.authKey + '';
+    
+    User.register(viewerId, authKey)
+        .then((user) => {
+            res.json({
+                "viewerId": user.viewerId,
+                "created": user.created
+            });
+        })
+        .catch((err) => {
+            log.error(err.status);
+            if (err.status === 400) next(400);
+            else next(500);
+        })
 
 });
 router.put('/', (req, res) => {

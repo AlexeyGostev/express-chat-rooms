@@ -1,9 +1,9 @@
 const log = require('../libs/log.js')(module);
-const HttpError = require('../errors').HttpError;
+//const HttpError = require('../errors').HttpError;
 
 
 module.exports = function(server) {
-    let io = require('socket.io')(server); // create ws
+    const io = require('socket.io')(server); // create ws
     io.set('origins', '*:3000');
     io.set('logger', log);
 
@@ -13,7 +13,7 @@ module.exports = function(server) {
         });
 
         socket.on('message', function(message){
-            var rooms = Object.keys(socket.rooms);
+            let rooms = Object.keys(socket.rooms);
             io.to(rooms[1]).emit('message', message);
             console.log(rooms);
         });

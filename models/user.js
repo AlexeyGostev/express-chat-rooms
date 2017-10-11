@@ -1,6 +1,7 @@
 const crypto = require('crypto');
 const log = require('../libs/log.js')(module);
 
+const HttpError = require('../errors').HttpError;
 const AuthError = require('../errors').AuthError;
 const mongoose = require('../libs/mongoose');
 const Schema = mongoose.Schema;
@@ -34,7 +35,7 @@ schema.virtual('authKey')
     .set(function(authKey) {
         this._plainPassword = authKey;
         this.salt = Math.random() + '';
-        this.hashedPassword = this.encryptPassword(authKey);
+        this.hashedAuthKey = this.encryptPassword(authKey);
     })
     .get(function() {
         return this._plainPassword;
@@ -64,15 +65,22 @@ schema.statics.register = function(viewerId, authKey) {
     return new Promise((resolve, reject) => {
         const User = this;
 
-        let user = new User({
-            viewerId: viewerId,
-            authKey: authKey
+        User.findOne({viewerId : viewerId}, (err, oldUser) => {
+            if (oldUser) {
+                reject(new HttpError(400));
+            } else {
+                let user = new User({
+                    viewerId: viewerId,
+                    authKey: authKey
+                });
+
+                user.save((err, user) => {
+                    if (err) reject(err);
+                    if (user) resolve(user);
+                });
+            }
         });
 
-        user.save((err, user) => {
-            if (err) reject(err);
-            if (user) resolve(user);
-        });
     });
 };
 

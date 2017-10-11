@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title> Tets User Post</title>
+</head>
+<body>
+    <form action="" class="form">
+        <input type="text" name="viewerId" title="viewerId" >
+        <input type="text" name="authKey" title="authId">
+        <input type="button" name="submit" value="Кнопка" class="button">
+    </form>
+    <script src="vendor/axios.min.js"></script>
+    <script>
+        let button = document.querySelector('.button');
+        let form = document.querySelector('.form');
+        console.log(form.elements['viewerId'].value);
+        button.addEventListener('click', (e) => {
+            console.log(form.elements['viewerId'].value);
+            axios.post('/user', {
+                viewerId : form.elements['viewerId'].value,
+                authId : form.elements['authKey'].value
+            })
+                .then((user) => {
+                    console.log(user);
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+            console.log('done');
+        });
+
+    </script>
+</body>
+</html>

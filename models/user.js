@@ -98,4 +98,24 @@ schema.statics.getUser = function(viewerId) {
     });
 };
 
+schema.statics.getUsers = function(options) {
+    return new Promise((resolve, reject) => {
+        const User = this;
+        let search = {};
+
+        for ( let el in options ) {
+            if (options.hasOwnProperty(el)) {
+                search[el] = options[el];
+            }
+        }
+        User.find(search, (err, users) => {
+            if (err) {
+                log.error(err.message);
+                reject(err);
+            }
+            resolve(users);
+        });
+    });
+};
+
 exports.User = mongoose.model('User', schema);

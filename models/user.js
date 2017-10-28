@@ -6,7 +6,6 @@ const AuthError = require('../errors').AuthError;
 const mongoose = require('../libs/mongoose');
 const Schema = mongoose.Schema;
 
-
 let schema = new Schema({
     viewerId: {
         type: String,
@@ -118,4 +117,4 @@ schema.statics.getUsers = function(options) {
     });
 };
 
-exports.User = mongoose.model('User', schema);
+module.exports = mongoose.model('User', schema);

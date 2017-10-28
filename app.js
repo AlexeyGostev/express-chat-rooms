@@ -1,42 +1,59 @@
 const express = require('express');
+
+// nodejs modules
 const path = require('path');
-const logger = require('morgan');
+
+// npm package modules
+const logger = require('morgan'); // Логгер уровня запросов
+const log = require('./libs/log')(module); // Информативный логгер
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const sendHttpError = require('./middlewares/sendHttpError');
+
+// custom modules
 const HttpError = require('./errors/index').HttpError;
-const log = require('./libs/log')(module);
+const passport = require('./auth/passport');
 
-const user = require('./routes/user.js');
+// route modules
+const users = require('./routes/users');
+const token = require('./routes/token');
 
+
+// create app
 const app = express();
 
-// view engine setup
+//*******************************************************//
+// configures middleware                                 //
+//*******************************************************//
 
-app.engine('ejs', require('ejs-locals'));
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(sendHttpError);
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(passport.initialize());
 
-// routes middleware
+//*******************************************************//
+// routes middleware                                     //
+//*******************************************************//
 
-app.use('/user', user);
+app.use('/token', token);
+app.use('/users', users);
 
-// catch 404 and forward to error handler
+//*******************************************************//
+// error 404 middleware                                  //
+//*******************************************************//
+
 app.use((req, res, next) => {
   next(404);
 });
 
-// error handler
-app.use((err, req, res, next) => {
+//*******************************************************//
+// error handler middlerware                             //
+//*******************************************************//
+
+app.use((err, req, res) => {
   log.error(err);
   if (typeof err === 'number') err = new HttpError(err);
 

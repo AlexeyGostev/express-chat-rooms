@@ -53,7 +53,7 @@ app.use((req, res, next) => {
 // error handler middlerware                             //
 //*******************************************************//
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   log.error(err);
   if (typeof err === 'number') err = new HttpError(err);
 

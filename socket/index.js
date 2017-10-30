@@ -2,6 +2,7 @@ const log = require('../libs/log.js')(module);
 //const HttpError = require('../errors').HttpError;
 const AccessToken = require('../models/accessToken');
 const User = require('../models/user');
+const Room = require('../models/room');
 
 function emitError(s, errorMessage, errorDescription) {
   s.emit('errors', {
@@ -37,7 +38,7 @@ module.exports = function(server) {
           return;
         }
         if (!accessToken) {
-          emitError(socket, 'client error', 'incorrect access token)');
+          emitError(socket, 'client error', 'incorrect access token');
           return;
         }
         User.findOne({viewerId : accessToken.username}, (err, user) => {
@@ -46,14 +47,32 @@ module.exports = function(server) {
             return;
           }
           if (!user) {
-            emitError(socket, 'client error', 'incorrect access token)');
+            emitError(socket, 'client error', 'incorrect access token');
             return;
           }
-          io.to(room).emit('message', {
-            author: user.viewerId,
-            message: message,
-            date: Date.now()
-          })
+          Room.findOne({title: room}, (err, room) => {
+            if (err) {
+              emitError(socket, 'server error', 'unknown server error');
+              return;
+            }
+            if (!room) {
+              emitError(socket, 'client error', 'incorrect room title');
+              return;
+            }
+            let messageData = {
+              author: user.viewerId,
+              message: message,
+              date: Date.now()
+            };
+            room.history.push(messageData);
+            room.save((err) => {
+              if (err) {
+                emitError(socket, 'server error', 'unknown server error');
+                return;
+              }
+              io.to(room.title).emit('message', messageData);
+            });
+          });
         });
       });
     });

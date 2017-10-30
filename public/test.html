@@ -25,6 +25,11 @@
         <input type="button" name="enter" value="Отправить">
       </form>
     </section>
+    <section id="chat">
+      <ul>
+
+      </ul>
+    </section>
   <script src="vendor/axios.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -32,6 +37,7 @@
       let form1 = document.querySelector('#addUserFromRoom > form');
       let form2 = document.querySelector('#removeUserFromRoom > form');
       let form3 = document.querySelector('#writeMessage > form');
+      let ul = document.querySelector('#chat > ul');
       form1.children[1].addEventListener('click', (e) => {
         e.preventDefault();
         if (form1.children[0].value === '') return false;
@@ -61,6 +67,9 @@
         console.log(message);
       });*/
       socket.on('message', (data) => {
+        let p = document.createElement('p');
+        p.innerHTML = data.author + ' > ' + data.message;
+        ul.appendChild(p);
         console.log(data);
       });
       socket.on('errors', (err) => {

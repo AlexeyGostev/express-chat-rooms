@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> Test page</title>
+</head>
+  <body>
+    <section id="addUserFromRoom">
+      <form action="" method="POST">
+        <input type="text" name="room" placeholder="room">
+        <input type="button" name="enter" value="Добавить">
+      </form>
+    </section>
+    <section id="removeUserFromRoom">
+      <form action="" method="POST">
+        <input type="text" name="room" placeholder="room">
+        <input type="button" name="enter" value="Удалить">
+      </form>
+    </section>
+    <section id="writeMessage">
+      <form action="" method="POST">
+        <input type="text" name="room" placeholder="room">
+        <input type="text" name="access-token" placeholder="access token">
+        <input type="text" name="message" placeholder="your message">
+        <input type="button" name="enter" value="Отправить">
+      </form>
+    </section>
+  <script src="vendor/axios.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+      let socket = io.connect('');
+      let form1 = document.querySelector('#addUserFromRoom > form');
+      let form2 = document.querySelector('#removeUserFromRoom > form');
+      let form3 = document.querySelector('#writeMessage > form');
+      form1.children[1].addEventListener('click', (e) => {
+        e.preventDefault();
+        if (form1.children[0].value === '') return false;
+        socket.emit('addUserFromRoom', form1.children[0].value);
+        return false;
+      });
+      form2.children[1].addEventListener('click', (e) => {
+        e.preventDefault();
+        if (form2.children[0].value === '') return false;
+        socket.emit('removeUserFromRoom', form2.children[0].value);
+        return false;
+      });
+      form3.children['enter'].addEventListener('click', (e) => {
+        e.preventDefault();
+        socket.emit('message', form3.children['access-token'].value, form3.children['message'].value, form3.children['room'].value);
+        return false;
+      });
+
+
+
+    socket.on('connect', function() {
+      /*socket.on('message', function(message) {
+        var p = document.createElement('p');
+        p.innerHTML = message;
+        var body = document.body;
+        body.appendChild(p);
+        console.log(message);
+      });*/
+      socket.on('message', (data) => {
+        console.log(data);
+      });
+      socket.on('errors', (err) => {
+        console.log(err);
+      });
+    });
+
+
+  </script>
+  </body>
+</html>

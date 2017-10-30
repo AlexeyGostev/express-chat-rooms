@@ -126,4 +126,4 @@ schema.static.deleteRoom = function(id, title) {
 };
 
 
-exports.Room = mongoose.model('Room', schema);
+module.exports = mongoose.model('Room', schema);
